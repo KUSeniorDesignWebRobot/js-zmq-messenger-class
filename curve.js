@@ -6,8 +6,6 @@ class Messenger extends EventEmitter {
         let zmq = require('zeromq'),
         z85 = require('z85'),
         debug = require('debug')('zmq-zap:examples:curve');
-        console.log(z85.version);
-        while(true);
         // port = 'tcp://127.0.0.1:5555';
         
         let serverKeypair = zmq.curveKeypair();
