@@ -1,0 +1,25 @@
+{
+  "name": "robot-facing-zmq-test-server",
+  "version": "1.0.0",
+  "description": "This is a test bed for the zmq connection to the python app",
+  "main": "curve.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "describe": "^1.2.0",
+    "electron-mocha": "^6.0.1",
+    "express": "^4.16.2",
+    "jsdoc": "^3.5.5",
+    "mocha": "^5.0.1",
+    "nyc": "^11.4.1",
+    "prebuild": "^7.4.0",
+    "semver": "^5.5.0",
+    "should": "^13.2.1",
+    "z85": "^0.0.1",
+    "zeromq": "^4.6.0",
+    "zmq-zap": "0.0.3"
+  }
+}
