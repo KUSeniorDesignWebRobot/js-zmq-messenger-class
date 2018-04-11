@@ -7,7 +7,7 @@ class Messenger extends EventEmitter {
         z85 = require('z85'),
         debug = require('debug')('zmq-zap:examples:curve');
         // port = 'tcp://127.0.0.1:5555';
-        
+
         let serverKeypair = zmq.curveKeypair();
         let  clientKeypair = zmq.curveKeypair();
         // var serverPublicKey = serverKeypair.public,
@@ -31,11 +31,15 @@ class Messenger extends EventEmitter {
         // Tell it to use the CURVE mechanism for authentication
         zap.use(new CurveMechanism(function(data, callback) {
             console.log('Authenticating %s', JSON.stringify(data, true, 2));
-            if ((data.domain == 'test') && (data.address == "127.0.0.1")) {
+            if ((data.domain == 'test')){
+               // && (data.address == "127.0.0.1")) { //this caused it to fail bc we're bound to * which is the current IP, which might not be 127.0.0.1
+                // while(1)
                 if (data.publickey == clientPublicKey) callback(null, true);
                 else callback(null, false);
             }
-            else callback(null, false);
+            else{
+               callback(null, false);
+            }
         }));
 
         // Setup ZeroMQ ZAP socket
@@ -45,7 +49,7 @@ class Messenger extends EventEmitter {
             // When we get a message, send it through to the ZAP handler
             zap.authenticate(arguments, function(err, response) {
                 if (err) console.error('Error:', err);
-                
+
                 // Always send the response if the handler gives us one in the callback.
                 // This should be done even if there is an error so that we don't block any sockets.
                 if (response) zapSocket.send(response);
@@ -126,20 +130,34 @@ var aM = {
 
 
 // Example Class Usage
-
-let myMessenger = new Messenger('tcp://127.0.0.1:5555');
-
+// let myMessenger = new Messenger('tcp://127.0.0.1:5555');
+let myMessenger = new Messenger('tcp://*:5555');
+var i = 0
+var doOnce = true;
+var start = 0;
 myMessenger.on('message', function(data){
+    if(doOnce){
+      doOnce = false;
+      start = new Date().getTime() / 1000;
+    }
+    var current = new Date().getTime() / 1000;
+    var diff = current - start
+    if(i % 100 == 0)
+    {
+      var messagesPerSecond = (i*1.0)/(diff*1.0);
+      console.log(messagesPerSecond, i)
+    }
     var request = JSON.parse(data);
-    console.log(request);
+    // console.log(request);
     if(request.message_type == "acknowledgement"){
-        console.log("Acknowledgement Message");
+        // console.log("Acknowledgement Message");
         myMessenger.send(JSON.stringify(cM));
     }
     else if(request.message_type == "report"){
-        console.log("Report Message");
+        // console.log("Report Message");
         myMessenger.send(JSON.stringify(aM));
     } else if(request.message_type == "termination") {
-        console.log("Termination Message");
+        // console.log("Termination Message");
     }
+    i = i + 1
 });
